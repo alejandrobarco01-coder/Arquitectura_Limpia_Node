@@ -1,15 +1,9 @@
 import { Router } from "express";
-import { ProductDatasource } from "../../datasources/product.datasource";
-import { ProductRepositoryImpl } from "../../repositories/product.repository.impl";
-import { GetAllProductsUseCase } from "../../../application/usecases/get-all-products.usecase";
-import { ProductsController } from "../controllers/products.controller";
+import { productsController } from '../config/dependencies';
 
 export class ProductsRoutes {
   static get routes(): Router {
     const router = Router();
-    const repository = new ProductRepositoryImpl(new ProductDatasource());
-    const getAllProducts = new GetAllProductsUseCase(repository);
-    const controller = new ProductsController(getAllProducts);
 
     /**
      * @openapi
@@ -26,6 +20,7 @@ export class ProductsRoutes {
      *         schema:
      *           type: integer
      *           minimum: 1
+     *           maximum: 1000
      *           example: 10
      *         description: Cantidad de productos a generar
      *     responses:
@@ -38,9 +33,9 @@ export class ProductsRoutes {
      *               items:
      *                 $ref: '#/components/schemas/Product'
      *       400:
-     *         description: Parámetro inválido
+     *         description: countProducts no es un entero entre 1 y 1000
      */
-    router.get("/:countProducts", controller.getAllProducts);
+    router.get("/:countProducts", productsController.getAllProducts);
 
     return router;
   }

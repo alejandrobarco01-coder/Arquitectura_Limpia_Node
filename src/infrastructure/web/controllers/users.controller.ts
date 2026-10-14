@@ -46,13 +46,15 @@ export class UsersController {
    * @param res - Objeto Response de Express
    */
   getAllUsers = (req: Request, res: Response): void => {
-    const { countUsers } = req.params;
+    const countUsers = Number(req.params.countUsers);
+    if (!Number.isInteger(countUsers) || countUsers < 1 || countUsers > 1000) {
+      res.status(400).json({ message: 'countUsers debe ser un entero entre 1 y 1000.' });
+      return;
+    }
 
-    setTimeout(() => {
-      this.getAllUsersUseCase
-      .execute(Number(countUsers))
-      .then((users) => res.status(201).json(users))
+    this.getAllUsersUseCase
+      .execute(countUsers)
+      .then((users) => res.status(200).json(users))
       .catch((error) => HandleError.error(error, res));
-    }, 3000);
   };
 }

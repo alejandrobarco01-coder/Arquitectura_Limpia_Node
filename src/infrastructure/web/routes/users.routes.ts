@@ -1,15 +1,9 @@
 import { Router } from "express";
-import { GetAllUsersUseCase } from "../../../application/usecases/get-all-users.usecase";
-import { UserDatasource } from "../../datasources/user.datasource";
-import { UserRepositoryImpl } from "../../repositories/user.repository.impl";
-import { UsersController } from "../controllers/users.controller";
+import { usersController } from '../config/dependencies';
 
 export class UsersRoutes {
   static get routes(): Router {
     const router = Router();
-    const repository = new UserRepositoryImpl(new UserDatasource());
-    const getAllUsers = new GetAllUsersUseCase(repository);
-    const controller = new UsersController(getAllUsers);
 
     /**
      * @openapi
@@ -26,6 +20,7 @@ export class UsersRoutes {
      *         schema:
      *           type: integer
      *           minimum: 1
+     *           maximum: 1000
      *           example: 10
      *         description: Cantidad de usuarios a generar
      *     responses:
@@ -38,9 +33,9 @@ export class UsersRoutes {
      *               items:
      *                 $ref: '#/components/schemas/User'
      *       400:
-     *         description: Parámetro inválido
+     *         description: countUsers no es un entero entre 1 y 1000
      */
-    router.get("/:countUsers", controller.getAllUsers);
+    router.get("/:countUsers", usersController.getAllUsers);
 
     return router;
   }

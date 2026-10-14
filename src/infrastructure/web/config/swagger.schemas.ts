@@ -72,3 +72,22 @@
  *           example: 4500
  */
 export {};
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required: [id, name, description]
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         name:
+ *           type: string
+ *           example: Frutas
+ *         description:
+ *           type: string
+ *           example: Frutas frescas
+ */

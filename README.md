@@ -1,103 +1,59 @@
-# Clean Architecture en NodeJS
+# Clean Architecture API - Node.js
 
-```
-src
-├── domain
-│   ├── models
-│   │   ├── user.entity.ts
-│   │   └── product.entity.ts
-│   └── repositories
-│       ├── user.repository.ts
-│       └── product.repository.ts
-│
-├── application
-│   └── use-cases
-│       ├── get-all-users.usecase.ts
-│       └── get-all-products.usecase.ts
-│
-├── infrastructure
-│   ├── controllers
-│   │   ├── user.controller.ts
-│   │   └── product.controller.ts
-│   ├── repositories
-│   │   ├── user.repository.impl.ts
-│   │   └── product.repository.impl.ts
-│   ├── datasources
-│   │   ├── user.datasource.ts
-│   │   └── product.datasource.ts
-│   └── web
-│       ├── config/
-│       ├── errors/
-│       ├── interfaces/
-│       ├── controllers/
-│       ├── routes/
-│       └── server.ts
-│
-└── app.ts
+Backend del Taller 6. Expone módulos de usuarios, productos y categorías mediante Express y mantiene las reglas de aplicación detrás de contratos de repositorio.
+
+## Requisitos
+
+- Node.js compatible con TypeScript 5.9.
+- npm.
+
+## Instalación y ejecución
+
+```bash
+npm install
+npm start
 ```
 
-## Paso 1 - Crear Modelos
+El servidor inicia en `http://localhost:3000`. Para revisar la compilación TypeScript:
 
-```
-src//domain/models/
-├── user.model.ts
-└── product.model.ts
+```bash
+npm run build
 ```
 
-## Paso 2 - Crear Repositorios
+## API y documentación
 
-```
-src/domain/repositories/
-├── user.repository.ts
-└── product.repository.ts
-```
+Swagger UI: `http://localhost:3000/api/docs`
 
-## Paso 3 - Crear Casos de Uso
+| Método | Endpoint | Respuesta |
+|---|---|---|
+| GET | `/api/users/{countUsers}` | Usuarios generados; `countUsers` entre 1 y 1000 |
+| GET | `/api/products/{countProducts}` | Productos generados; `countProducts` entre 1 y 1000 |
+| GET | `/api/categories` | Categorías del catálogo |
 
-```
-src/application/usecases/
-├── get-all-users.usecase.ts
-└── get-all-products.usecase.ts
-```
+Las listas de usuarios y productos se generan con Faker. Categorías usa el catálogo fijo `Carnes`, `Frutas`, `Lacteos` y `Verduras`. Los tres endpoints responden JSON y usan HTTP 200 cuando la consulta es correcta; las cantidades inválidas responden HTTP 400.
 
-## Paso 4 - Crear Datasources
+## Capas
 
-```
-src/infrastructure/datasource/
-├── user.datasource.ts
-└── product.datasource.ts
-```
-
-## Paso 5 - Crear Repositorios Implementadores
-
-```
-src/infrastructure/repositories/
-├── user.repository.impl.ts
-└── product.repository.impl.ts
+```text
+src/
+├── domain/                 # Modelos y contratos de repositorio
+├── application/usecases/   # Acciones de aplicación
+└── infrastructure/
+    ├── datasources/        # Fuentes de datos
+    ├── repositories/       # Adaptadores de contratos
+    └── web/
+        ├── config/         # Variables y composición de dependencias
+        ├── controllers/    # Adaptadores HTTP
+        ├── routes/         # Rutas Express y anotaciones OpenAPI
+        └── server.ts
 ```
 
-## Paso 6 - Implementar Web (Express – Framework Externo)
+`infrastructure/web/config/dependencies.ts` es la raíz de composición. Allí se construyen los datasources, repositorios, casos de uso y controladores; las rutas reciben los controladores ya configurados.
 
-```
-src/infrastructure/web/
-├── config/
-├── errors/
-├── interfaces/
-├── controllers/
-├── routes/
-└── server.ts
+## Contrato de categoría
+
+```json
+{ "id": 1, "name": "Carnes", "description": "Carnes y proteínas" }
 ```
 
-# Funcionamiento del Backend
-
-## Ejecutar Backend
-```
-npm run start
-```
-
-## Urls Consumo
-```
-http://localhost:3000/api/docs
-http://localhost:3000/api/users/{countUsers}
-http://localhost:3000/api/products/{countProducts}
-```
+El backend Spring Boot debe exponer el mismo contrato en `GET /api/categories` para que Angular pueda alternar proveedores sin cambiar los casos de uso ni las vistas.

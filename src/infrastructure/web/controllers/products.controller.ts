@@ -49,13 +49,15 @@ export class ProductsController {
    * @param res - Objeto Response de Express
    */
   getAllProducts = (req: Request, res: Response): void => {
-    const { countProducts } = req.params;
+    const countProducts = Number(req.params.countProducts);
+    if (!Number.isInteger(countProducts) || countProducts < 1 || countProducts > 1000) {
+      res.status(400).json({ message: 'countProducts debe ser un entero entre 1 y 1000.' });
+      return;
+    }
 
-    setTimeout(() => {
-      this.getAllProductsUseCase
-      .execute(Number(countProducts))
-      .then((products) => res.status(201).json(products))
+    this.getAllProductsUseCase
+      .execute(countProducts)
+      .then((products) => res.status(200).json(products))
       .catch((error) => HandleError.error(error, res));
-    }, 3000);
   };
 }
